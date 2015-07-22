@@ -25,7 +25,7 @@ if [[ ${STATUS} -ne 0 ]]; then
         exit $STATUS
 fi
 
-java -cp ".:/usr/local/pig/lib/hadoop1-runtime/*:/usr/local/pig/lib/*:/usr/local/pig/*" org.apache.pig.Main -x local preprocess.pig
+java -cp ".:$PIG_HOME/lib/hadoop1-runtime/*:$PIG_HOME/lib/*:$PIG_HOME/*" org.apache.pig.Main -x local preprocess.pig
 STATUS=$?
 if [[ ${STATUS} -ne 0 ]]; then
         echo 'Failure:'
