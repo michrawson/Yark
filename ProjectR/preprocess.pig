@@ -1,3 +1,10 @@
+/*****************PROJECT YARK*********************/
+/* Ariel Boris Dexter bad225@nyu.edu */
+/* Kania Azrina ka1531@nyu.edu */
+/* Michael Rawson mr4209@nyu.edu */
+/* Yixue Wang yw1819@nyu.edu */
+/**************************************************/
+
 REGISTER pig_udf.jar;
 ALL_DATES = load 'ALL_DATES.csv' using PigStorage(',') as (date:chararray);
 CPI = load 'CPI_CHNG.csv' using PigStorage(',') as (date:chararray, price:chararray);

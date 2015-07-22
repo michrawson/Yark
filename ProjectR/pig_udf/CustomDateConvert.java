@@ -1,3 +1,10 @@
+/*****************PROJECT YARK*********************/
+/* Ariel Boris Dexter bad225@nyu.edu */
+/* Kania Azrina ka1531@nyu.edu */
+/* Michael Rawson mr4209@nyu.edu */
+/* Yixue Wang yw1819@nyu.edu */
+/**************************************************/
+
 package pig_udf;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.data.Tuple;
