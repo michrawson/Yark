@@ -1,8 +1,8 @@
 -- /*****************PROJECT YARK*********************/
 -- /* Ariel Boris Dexter bad225@nyu.edu */
--- /* Kania Azrina ka1531@nyu.edu */
--- /* Michael Rawson mr4209@nyu.edu */
--- /* Yixue Wang yw1819@nyu.edu */
+-- /* Kania Azrina ka1531@nyu.edu       */
+-- /* Michael Rawson mr4209             */
+-- /* Yixue Wang yw1819@nyu.edu         */
 -- /**************************************************/
 
 CREATE TABLE GDELT_Table (date STRING, source STRING, target STRING, cameoCODE STRING, numEvents STRING, numArts STRING, QuadClass STRING, Goldstein STRING, SourceGeoType STRING, SourceGeoLat STRING,	SourceGeoLong STRING, TargetGeoType STRING, TargetGeoLat STRING, TargetGeoLong STRING, ActionGeoType STRING, ActionGeoLat STRING, ActionGeoLong STRING)

@@ -1,8 +1,8 @@
 /*****************PROJECT YARK*********************/
 /* Ariel Boris Dexter bad225@nyu.edu */
-/* Kania Azrina ka1531@nyu.edu */
-/* Michael Rawson mr4209@nyu.edu */
-/* Yixue Wang yw1819@nyu.edu */
+/* Kania Azrina ka1531@nyu.edu       */
+/* Michael Rawson mr4209             */
+/* Yixue Wang yw1819@nyu.edu         */
 /**************************************************/
 
 REGISTER pig_udf.jar;
