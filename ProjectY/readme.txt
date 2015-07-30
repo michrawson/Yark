@@ -9,7 +9,7 @@ Final Project
 Description :
 Preprocess the data and load it into Hive Table 
 
-File has already been updated.
+File has already been updated. (See Hive_preprocessing_GDELT.hql for details)
 
 
 /****** Code Drop 2 *******/
