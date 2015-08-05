@@ -17,4 +17,11 @@ Description :
 Added script to further clean UNICEF file, giving them attributes such as sequence id, event time stamp, so it is ready to be processed by R, aRulesSequence package. Also utilizes RAKE (Rapid Automated Keyword Extraction) algorithm to extract topics/keywords from each news story.
 Filenames : 
 unicef-news-preprocessing.pig
-tutorial.jar, datafu-1.2.0-sources.jar, rake.py(UDF)
+tutorial.jar, datafu-1.2.0-sources.jar, rake.py (UDF)
+
+/****** Code Drop 3 *******/
+Description :
+Adjusted the preprocessing script and added R script to generate news sequence and exported it to .csv file.
+Filenames : 
+unicef_news_sequence.R
+unicef-news-preprocessing.pig
