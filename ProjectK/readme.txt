@@ -18,3 +18,10 @@ Added script to further clean UNICEF file, giving them attributes such as sequen
 Filenames : 
 unicef-news-preprocessing.pig
 tutorial.jar, datafu-1.2.0-sources.jar, rake.py (UDF)
+
+/****** Code Drop 3 *******/
+Description :
+Adjusted the preprocessing script and added R script to generate news sequence and exported it to .csv file.
+Filenames : 
+unicef_news_sequence.R
+unicef-news-preprocessing.pig
