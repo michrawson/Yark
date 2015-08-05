@@ -20,3 +20,10 @@ Filenames :
 Code : Hive_preprocessing_GDELT.hql frequency_GDELT.hql
 Data: sample_value_afterpreprocessing.csv
 top20_cameo_code.csv
+
+/****** Code Drop 3 *******/
+Description :
+
+By using python and spark, mined the frequent pattern based on everyday’s news event code. Need to tune the parameters of minsupport.
+
+Code : frequentpatternmining.ipynb
