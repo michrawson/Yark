@@ -1,1 +1,1 @@
-Hive code creates a table from the project folder containing large CSV files in HDFS, then sums the indicators per country  
+I tried using Hive, but realized that the number of columns and text format of the data made it unsuitable to the task. I therefore recoded the program as a mapreduce job. The mapper sums the data columns per country-pair row and the reducer aggregates the sum per every unique country pair. 
