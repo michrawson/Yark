@@ -132,29 +132,34 @@ for ( ignore_fold in 0:9 ) { #for each fold
     temp_net <- neuralnet(
                  as.formula(paste('future', 
                               paste(colnames(trainingset_scaled_dates)[1:
-                                    (ncol(trainingset)-1)], 
+                                    (ncol(trainingset_scaled_dates)-1)], 
                                     collapse=" + "), 
                               sep=" ~ ")),
                           trainingset_scaled_dates, 
                           hidden = nrow(trainingset_scaled_dates), 
-                         threshold = 0.1, lifesign='full')
+                         threshold = 0.1, lifesign='full', rep=5)
  
     print('neural network creation time:')
     print(proc.time() - ptm4)
 
     print(temp_net)
-    plot(temp_net)
     stocknet[ignore_fold+1] <- temp_net
 
-    ignored_sample <- subset(trainingset_scaled_dates, date=reserve_date)
+    ignored_sample <- subset(trainingset_scaled_dates, date=reserve_date)[
+                                    1:(ncol(trainingset_scaled_dates)-1)]
+    ignored_result <- subset(trainingset_scaled_dates, date=reserve_date)[
+                                    ncol(trainingset_scaled_dates)]
 
     ptm5 <- proc.time()
 
     validation_result <- compute(temp_net, ignored_sample)
     print(validation_result)
+    print('validation mean error:')
+    print(mean(abs(validation_result$net.result-ignored_result$future)))
     print('computer validation set time:')
     print(proc.time() - ptm5)
 }
+
 print('Total time')
 print(proc.time() - ptm)
 
