@@ -23,6 +23,9 @@ ptm <- proc.time()
 #import data
 data_time_series <- read.csv('result_small.csv',head=FALSE,
                              sep=',', na.strings=c('0') )
+ncol_data = ncol(data_time_series)
+nrow_data = nrow(data_time_series)
+
 #setup constants
 spx_col <- 12
 two_month <- 60
@@ -41,17 +44,22 @@ for(i in 1:ncol(data_time_series)){
 print('Cleaned NA')
 
 stopifnot(valid_dates(data_time_series[[1]]))
+stopifnot(ncol(data_time_series)==ncol_data)
+stopifnot(nrow(data_time_series)==nrow_data)
 
 data_scaled <- data_time_series
 
 #scale values
 for ( i in 2:ncol(data_scaled) ) { #for each col after date
-	max_val <- max(data_scaled[i],na.rm=TRUE) #max of col
-	min_val <- min(data_scaled[i],na.rm=TRUE) #min of col
-	range_val <- max_val - min_val #range of col
-	data_scaled[i] <- (data_scaled[i] - min_val) / range_val
+    max_val <- max(data_scaled[i],na.rm=TRUE) #max of col
+    min_val <- min(data_scaled[i],na.rm=TRUE) #min of col
+    range_val <- max_val - min_val #range of col
+    data_scaled[i] <- (data_scaled[i] - min_val) / range_val
     stopifnot(valid_inputs(data_scaled[[i]]))
 }
+stopifnot(ncol(data_scaled)==ncol_data)
+stopifnot(nrow(data_scaled)==nrow_data)
+
 print('Scaled data')
 
 #calculate spx 2 month averages
@@ -62,6 +70,8 @@ for( date_index in 1:(nrow(data_scaled)-two_month) ){
                                        na.rm=TRUE)
 }
 stopifnot(valid_inputs(avg_spx_data))
+stopifnot(length(avg_spx_data)==(nrow(data_scaled)-two_month))
+
 print('Calculated outputs')
 
 #find out number of samples that can be taken
@@ -83,6 +93,8 @@ trainingset <-
 for( col in 2:(((ncol(data_scaled)-1)*sample_day_count)+1) ){
     trainingset[col] <- -1
 }
+stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1))
+stopifnot(nrow(trainingset)==sample_size)
 
 current_date_index <- random_start
 #for each sample, add to training set
@@ -113,6 +125,8 @@ for( sampleCounter in 1:sample_size){
     print('Sample time')
     print(proc.time() - ptm3)
 }
+stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1))
+stopifnot(nrow(trainingset)==sample_size)
 
 colnames(trainingset) <- c(
                     colnames(trainingset)[1:(ncol(trainingset)-1)],
@@ -135,6 +149,10 @@ min_val <- min(trainingset_scaled_dates[1],na.rm=TRUE) #min of col
 range_val <- max_val - min_val #range of col
 trainingset_scaled_dates[1] <- 
             (trainingset_scaled_dates[1] - min_val) / range_val
+
+stopifnot(ncol(trainingset_scaled_dates)==
+                        ((ncol_data-1)*sample_day_count+1))
+stopifnot(nrow(trainingset_scaled_dates)==sample_size)
 
 for( i in 1:ncol(trainingset_scaled_dates) ){
     stopifnot(valid_inputs(trainingset_scaled_dates[[i]]))
