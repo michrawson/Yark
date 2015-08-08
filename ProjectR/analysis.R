@@ -90,10 +90,10 @@ print(paste('random sample: ',random_start))
 ptm2 <- proc.time()
 trainingset <- 
     data.frame(date=c(1:sample_size))
-for( col in 2:(((ncol(data_scaled)-1)*sample_day_count)+1) ){
+for( col in 2:(((ncol(data_scaled)-1)*sample_day_count)+1+1) ){
     trainingset[col] <- -1
 }
-stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1))
+stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1+1))
 stopifnot(nrow(trainingset)==sample_size)
 
 current_date_index <- random_start
@@ -125,7 +125,7 @@ for( sampleCounter in 1:sample_size){
     print('Sample time')
     print(proc.time() - ptm3)
 }
-stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1))
+stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1+1))
 stopifnot(nrow(trainingset)==sample_size)
 
 colnames(trainingset) <- c(
@@ -150,8 +150,7 @@ range_val <- max_val - min_val #range of col
 trainingset_scaled_dates[1] <- 
             (trainingset_scaled_dates[1] - min_val) / range_val
 
-stopifnot(ncol(trainingset_scaled_dates)==
-                        ((ncol_data-1)*sample_day_count+1))
+stopifnot(ncol(trainingset_scaled_dates)==ncol(trainingset))
 stopifnot(nrow(trainingset_scaled_dates)==sample_size)
 
 for( i in 1:ncol(trainingset_scaled_dates) ){
