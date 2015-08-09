@@ -82,8 +82,9 @@ while( current_date_index + sample_day_count + two_month <=
     current_date_index <- current_date_index + sample_day_count
     sample_size <- sample_size + 1
 }
+stopifnot(sample_size>=10)
 
-random_start <- sample( sample_day_count, 1, replace=F)
+random_start <- sample( 1:sample_day_count, 1, replace=F)
 print(paste('random sample: ',random_start))
 
 #setup training set data frame
@@ -160,14 +161,31 @@ for( i in 1:ncol(trainingset_scaled_dates) ){
 print('Setup trainingset time')
 print(proc.time() - ptm2)
 
+validation_sample_size <- floor(sample_size/10)
+stopifnot(validation_sample_size>=1)
+reserved_samples <- sample( 1:sample_size, sample_size, replace=F)
+stopifnot(length(reserved_samples)==sample_size)
+
+reserved_sample_counter <- 1
+
 #stocknet <- c(1:10)
 # cross validation/10-fold
-for ( ignore_fold in 0:(sample_size-1) ) { #for each fold
-    reserve_date_index <- random_start + (sample_day_count*ignore_fold)
-    reserve_date <- trainingset_scaled_dates[reserve_date_index,1]
+for ( fold in 0:10 ) { #for each fold
+    #create subset of training data
+    #trainingsubset ignoring fold via random pick of 10%
+    trainingsubset <- trainingset_scaled_dates[
+                            (-1*reserved_samples[reserved_sample_counter:
+                            validation_sample_size]), ]
+    stopifnot(ncol(trainingsubset)==ncol(trainingset_scaled_dates))
+    stopifnot(nrow(trainingsubset)==
+              nrow(trainingset_scaled_dates)-validation_sample_size)
+    
+    for( i in 1:ncol(trainingsubset) ){
+        stopifnot(valid_inputs(trainingsubset[[i]]))
+    }
 
-    #trainingsubset ignoring fold
-    trainingsubset <- subset(trainingset_scaled_dates, date!=reserve_date)
+    reserved_sample_counter <- reserved_sample_counter + 
+                                                validation_sample_size
 
     print('Creating Neural Net')
     ptm4 <- proc.time()
@@ -179,7 +197,7 @@ for ( ignore_fold in 0:(sample_size-1) ) { #for each fold
                                     collapse=" + "), 
                               sep=" ~ ")),
                           trainingset_scaled_dates, 
-                          hidden = ncol(trainingset_scaled_dates), 
+                          hidden = 3, #2*ncol(trainingset_scaled_dates), 
                          threshold = 0.1, lifesign='full', rep=3)
  
     print('neural network creation time:')
