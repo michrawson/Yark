@@ -180,8 +180,8 @@ for ( fold in 0:10 ) { #for each fold
     #create subset of training data
     #trainingsubset ignoring fold via random pick of 10%
     trainingsubset <- trainingset_scaled_dates[
-                            (-1*reserved_samples[reserved_sample_counter:
-                            validation_sample_size]), ]
+                    (-1*reserved_samples[reserved_sample_counter:
+                    (reserved_sample_counter+validation_sample_size-1)]), ]
     stopifnot(ncol(trainingsubset)==ncol(trainingset_scaled_dates))
     stopifnot(nrow(trainingsubset)==
               nrow(trainingset_scaled_dates)-validation_sample_size)
@@ -241,7 +241,7 @@ for ( fold in 0:10 ) { #for each fold
                                  ignored_sample[,2:ncol(ignored_sample)])
     print(validation_result)
     print('validation mean error:')
-    print(mean((validation_result$net.result-ignored_result$future)^2))
+    print(mean((validation_result$net.result-ignored_result)^2))
     print('computer validation set time:')
     print(proc.time() - ptm5)
 }
