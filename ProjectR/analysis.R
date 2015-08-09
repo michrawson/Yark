@@ -237,7 +237,8 @@ for ( fold in 0:10 ) { #for each fold
     ptm5 <- proc.time()
 
     print('Computing...')
-    validation_result <- compute(temp_net, ignored_sample)
+    validation_result <- compute(temp_net, 
+                                 ignored_sample[,2:ncol(ignored_sample)])
     print(validation_result)
     print('validation mean error:')
     print(mean((validation_result$net.result-ignored_result$future)^2))
