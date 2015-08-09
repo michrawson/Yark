@@ -171,6 +171,9 @@ stopifnot(length(reserved_samples)==sample_size)
 
 reserved_sample_counter <- 1
 
+print('Total time so far...')
+print(proc.time() - ptm)
+
 #stocknet <- c(1:10)
 # cross validation/10-fold
 for ( fold in 0:10 ) { #for each fold
@@ -210,10 +213,10 @@ for ( fold in 0:10 ) { #for each fold
     #stocknet[ignore_fold+1] <- temp_net
 
     ignored_sample <- trainingset_scaled_dates[
-                            (reserved_samples[reserved_sample_counter:
-                            validation_sample_size]),
-                            1:(ncol(trainingset_scaled_dates)-1)]
-    stopifnot(ncol(ignored_sample)==ncol(trainingset_scaled_dates))
+                    (reserved_samples[reserved_sample_counter:
+                    (reserved_sample_counter+validation_sample_size-1)]),
+                    1:(ncol(trainingset_scaled_dates)-1)]
+    stopifnot(ncol(ignored_sample)==ncol(trainingset_scaled_dates)-1)
     stopifnot(nrow(ignored_sample)== validation_sample_size)
     
     for( i in 1:ncol(ignored_sample) ){
@@ -221,14 +224,14 @@ for ( fold in 0:10 ) { #for each fold
     }
 
     ignored_result <- trainingset_scaled_dates[
-                            (reserved_samples[reserved_sample_counter:
-                            validation_sample_size]),
-                            ncol(trainingset_scaled_dates)]
+                    (reserved_samples[reserved_sample_counter:
+                    (reserved_sample_counter+validation_sample_size-1)]),
+                    ncol(trainingset_scaled_dates)]
     stopifnot(ncol(ignored_result)==1)
     stopifnot(nrow(ignored_result)== validation_sample_size)
     
-    for( i in 1:ncol(ignored_result) ){
-        stopifnot(valid_inputs(ignored_result[[i]]))
+    for( i in 1:length(ignored_result) ){
+        stopifnot(valid_inputs(ignored_result[i]))
     }
 
     ptm5 <- proc.time()
