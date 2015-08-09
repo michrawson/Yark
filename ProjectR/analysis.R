@@ -21,7 +21,8 @@ valid_inputs <- function( inputs ){
 ptm <- proc.time()
 
 #import data
-data_time_series <- read.csv('result_small.csv',head=FALSE,
+print('Importing data...')
+data_time_series <- read.csv('result.csv',head=FALSE,
                              sep=',', na.strings=c('0') )
 ncol_data = ncol(data_time_series)
 nrow_data = nrow(data_time_series)
@@ -96,6 +97,8 @@ for( col in 2:(((ncol(data_scaled)-1)*sample_day_count)+1+1) ){
 }
 stopifnot(ncol(trainingset)==((ncol_data-1)*sample_day_count+1+1))
 stopifnot(nrow(trainingset)==sample_size)
+
+print('Preparing samples...')
 
 current_date_index <- random_start
 #for each sample, add to training set
@@ -187,7 +190,7 @@ for ( fold in 0:10 ) { #for each fold
     reserved_sample_counter <- reserved_sample_counter + 
                                                 validation_sample_size
 
-    print('Creating Neural Net')
+    print('Creating Neural Net...')
     ptm4 <- proc.time()
     #create neural net
     temp_net <- neuralnet(
@@ -206,17 +209,35 @@ for ( fold in 0:10 ) { #for each fold
     print(temp_net)
     #stocknet[ignore_fold+1] <- temp_net
 
-    ignored_sample <- subset(trainingset_scaled_dates, date=reserve_date)[
-                                    1:(ncol(trainingset_scaled_dates)-1)]
-    ignored_result <- subset(trainingset_scaled_dates, date=reserve_date)[
-                                    ncol(trainingset_scaled_dates)]
+    ignored_sample <- trainingset_scaled_dates[
+                            (reserved_samples[reserved_sample_counter:
+                            validation_sample_size]),
+                            1:(ncol(trainingset_scaled_dates)-1)]
+    stopifnot(ncol(ignored_sample)==ncol(trainingset_scaled_dates))
+    stopifnot(nrow(ignored_sample)== validation_sample_size)
+    
+    for( i in 1:ncol(ignored_sample) ){
+        stopifnot(valid_inputs(ignored_sample[[i]]))
+    }
+
+    ignored_result <- trainingset_scaled_dates[
+                            (reserved_samples[reserved_sample_counter:
+                            validation_sample_size]),
+                            ncol(trainingset_scaled_dates)]
+    stopifnot(ncol(ignored_result)==1)
+    stopifnot(nrow(ignored_result)== validation_sample_size)
+    
+    for( i in 1:ncol(ignored_result) ){
+        stopifnot(valid_inputs(ignored_result[[i]]))
+    }
 
     ptm5 <- proc.time()
 
+    print('Computing...')
     validation_result <- compute(temp_net, ignored_sample)
     print(validation_result)
     print('validation mean error:')
-    print(mean(abs(validation_result$net.result-ignored_result$future)))
+    print(mean((validation_result$net.result-ignored_result$future)^2))
     print('computer validation set time:')
     print(proc.time() - ptm5)
 }
