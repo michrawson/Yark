@@ -177,7 +177,8 @@ temp_net <- neuralnet(
                                 collapse=" + "), 
                           sep=" ~ ")),
                       trainingset_scaled_dates, 
-                      hidden = floor(0.5*ncol(trainingset_scaled_dates)), 
+                      hidden = floor(1/10*
+                                  ncol(trainingset_scaled_dates)), 
                       threshold = 0.1, lifesign='full', rep=3)
 nnet_col_count <- length(colnames(trainingset_scaled_dates)[2:
                                 (ncol(trainingset_scaled_dates)-1)])
