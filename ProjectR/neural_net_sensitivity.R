@@ -164,89 +164,70 @@ for( i in 1:ncol(trainingset_scaled_dates) ){
 print('Setup trainingset time')
 print(proc.time() - ptm2)
 
-validation_sample_size <- floor(sample_size/10)
-stopifnot(validation_sample_size>=1)
-reserved_samples <- sample( 1:sample_size, sample_size, replace=F)
-stopifnot(length(reserved_samples)==sample_size)
-
-reserved_sample_counter <- 1
-
 print('Total time so far...')
 print(proc.time() - ptm)
 
-#stocknet <- c(1:10)
-# cross validation/10-fold
-for ( fold in 0:10 ) { #for each fold
-    #create subset of training data
-    #trainingsubset ignoring fold via random pick of 10%
-    trainingsubset <- trainingset_scaled_dates[
-                    (-1*reserved_samples[reserved_sample_counter:
-                    (reserved_sample_counter+validation_sample_size-1)]), ]
-    stopifnot(ncol(trainingsubset)==ncol(trainingset_scaled_dates))
-    stopifnot(nrow(trainingsubset)==
-              nrow(trainingset_scaled_dates)-validation_sample_size)
+print(paste('Creating Neural Net...'))
+ptm4 <- proc.time()
+#create neural net
+#temp_net <- neuralnet(
+#             as.formula(paste('future', 
+#                          paste(colnames(trainingset_scaled_dates)[2:
+#                                (ncol(trainingset_scaled_dates)-1)], 
+#                                collapse=" + "), 
+#                          sep=" ~ ")),
+#                      trainingset_scaled_dates, 
+#                      hidden = 3, #2*ncol(trainingset_scaled_dates), 
+#                     threshold = 0.1, lifesign='full', rep=3)
+
+print('neural network creation time:')
+print(proc.time() - ptm4)
+
+print(temp_net)
+
+ptm5 <- proc.time()
+
+print('Computing...')
+#foreach indicator (index, indicator, etc.)
+for( selected_feature in 1:(ncol_data-1)){ 
+    print(paste('Feature: ',selected_feature))
+    trainingset_mutated <- trainingset_scaled_dates
+    trainingset_mutated[, seq(selected_feature, 
+                       ncol(trainingset_mutated), 
+                       by=(ncol_data-1))] <- trainingset_mutated[, 
+                                    seq(selected_feature, 
+                                    ncol(trainingset_mutated)-1, 
+                                    by=(ncol_data-1))] - 0.10
     
-    for( i in 1:ncol(trainingsubset) ){
-        stopifnot(valid_inputs(trainingsubset[[i]]))
-    }
+    stopifnot(ncol(trainingset_scaled_dates)==ncol(trainingset_mutated))
+    stopifnot(nrow(trainingset_scaled_dates)==nrow(trainingset_mutated))
 
-    reserved_sample_counter <- reserved_sample_counter + 
-                                                validation_sample_size
-
-    print(paste('Creating Neural Net [', fold, '] ...'))
-    ptm4 <- proc.time()
-    #create neural net
-    temp_net <- neuralnet(
-                 as.formula(paste('future', 
-                              paste(colnames(trainingsubset)[2:
-                                    (ncol(trainingsubset)-1)], 
-                                    collapse=" + "), 
-                              sep=" ~ ")),
-                          trainingsubset, 
-                          hidden = 3, #2*ncol(trainingsubset), 
-                         threshold = 0.1, lifesign='full', rep=3)
- 
-    print('neural network creation time:')
-    print(proc.time() - ptm4)
-
-    print(temp_net)
-    #stocknet[ignore_fold+1] <- temp_net
-
-    ignored_sample <- trainingset_scaled_dates[
-                    (reserved_samples[reserved_sample_counter:
-                    (reserved_sample_counter+validation_sample_size-1)]),
-                    1:(ncol(trainingset_scaled_dates)-1)]
-    stopifnot(ncol(ignored_sample)==ncol(trainingset_scaled_dates)-1)
-    stopifnot(nrow(ignored_sample)== validation_sample_size)
+    input_result <- compute(temp_net, trainingset_mutated[,
+                            2:ncol(trainingset_mutated)-1])
     
-    for( i in 1:ncol(ignored_sample) ){
-        stopifnot(valid_inputs(ignored_sample[[i]]))
+    for( adder in seq(0.01,0.2,by=0.01) ){ #add .01, 20 times,see change
+        trainingset_mutated[, seq(selected_feature, 
+                       ncol(trainingset_mutated), 
+                       by=(ncol_data-1))] <- trainingset_mutated[, 
+                                seq(selected_feature, 
+                                ncol(trainingset_mutated)-1, 
+                                by=(ncol_data-1))] + adder
+        
+        stopifnot(ncol(trainingset_scaled_dates)==ncol(trainingset_mutated))
+        stopifnot(nrow(trainingset_scaled_dates)==nrow(trainingset_mutated))
+
+        input_result <- compute(temp_net, trainingset_mutated[,
+                                    2:ncol(trainingset_mutated)-1])
     }
-
-    ignored_result <- trainingset_scaled_dates[
-                    (reserved_samples[reserved_sample_counter:
-                    (reserved_sample_counter+validation_sample_size-1)]),
-                    ncol(trainingset_scaled_dates)]
-    stopifnot(ncol(ignored_result)==1)
-    stopifnot(nrow(ignored_result)== validation_sample_size)
-    
-    for( i in 1:length(ignored_result) ){
-        stopifnot(valid_inputs(ignored_result[i]))
-    }
-
-    ptm5 <- proc.time()
-
-    print('Computing...')
-    validation_result <- compute(temp_net, 
-                                 ignored_sample[,2:ncol(ignored_sample)])
-    print(validation_result)
-    print('True result:')
-    print(ignored_result)
-    print('validation mean error:')
-    print(mean((validation_result$net.result-ignored_result)^2))
-    print('computer validation set time:')
-    print(proc.time() - ptm5)
 }
+
+print(input_result)
+print('True result:')
+print(ignored_result)
+print('mean error:')
+print(mean((input_result$net.result-ignored_result)^2))
+print('computer validation set time:')
+print(proc.time() - ptm5)
 
 print('Total time')
 print(proc.time() - ptm)
