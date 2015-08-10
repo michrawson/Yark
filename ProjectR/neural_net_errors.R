@@ -203,7 +203,7 @@ for ( fold in 0:10 ) { #for each fold
                                     collapse=" + "), 
                               sep=" ~ ")),
                           trainingsubset, 
-                          hidden = 3, #2*ncol(trainingsubset), 
+                          hidden = ncol(trainingsubset), 
                          threshold = 0.1, lifesign='full', rep=3)
  
     print('neural network creation time:')
