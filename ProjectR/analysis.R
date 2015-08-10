@@ -193,7 +193,7 @@ for ( fold in 0:10 ) { #for each fold
     reserved_sample_counter <- reserved_sample_counter + 
                                                 validation_sample_size
 
-    print('Creating Neural Net...')
+    print(paste('Creating Neural Net [', fold, '] ...'))
     ptm4 <- proc.time()
     #create neural net
     temp_net <- neuralnet(
@@ -240,6 +240,8 @@ for ( fold in 0:10 ) { #for each fold
     validation_result <- compute(temp_net, 
                                  ignored_sample[,2:ncol(ignored_sample)])
     print(validation_result)
+    print('True result:')
+    print(ignored_result)
     print('validation mean error:')
     print(mean((validation_result$net.result-ignored_result)^2))
     print('computer validation set time:')
