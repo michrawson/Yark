@@ -1,0 +1,308 @@
+@font-face
+{
+font-family: ge-inspira;
+
+src: url(ge-inspira.ttf);
+}
+
+@font-face
+{
+font-family: prata;
+
+src: url(prata.ttf);
+}
+
+@font-face
+{
+font-family: lato;
+
+src: url(lato.ttf);
+}
+
+body {
+  margin: 0;
+  font-family: lato;
+  background-color: whitesmoke !important;
+
+}
+
+
+#slider-conf{
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(left,  #ffffff 0%, #383838 100%, #383838 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ffffff), color-stop(100%,#383838), color-stop(100%,#383838)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(left,  #ffffff 0%,#383838 100%,#383838 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(left,  #ffffff 0%,#383838 100%,#383838 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(left,  #ffffff 0%,#383838 100%,#383838 100%); /* IE10+ */
+background: linear-gradient(to right,  #ffffff 0%,#383838 100%,#383838 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#383838',GradientType=1 ); /* IE6-9 */
+}
+
+#topics{
+width:100%; 
+overflow : auto; 
+max-height:100px; 
+background :white ;
+box-shadow: 1px 1px 2px rgba(0,0,0,.3) inset;
+scrollbar { width: 0 !important }
+}
+
+#tags{
+width:90%; 
+height : 20px;
+padding-left : 20px;
+background:white; 
+font-family:lato; 
+outline : none;
+-webkit-appearance:none !important;
+border : none !important;
+box-shadow: 1px 1px 2px rgba(0,0,0,.3) inset;
+}
+
+body .ui-autocomplete {
+	width:40px; 
+	background:whitesmoke; 
+	font-family:lato; 
+	font-size:12px;
+}
+
+body .ui-autocomplete .ui-menu-item .ui-corner-all {
+	background : #ffffff;
+
+}
+
+body .ui-autocomplete .ui-menu-item .ui-state-focus {
+   background : whitesmoke;
+   border: none;
+}
+
+#axis{
+  font-size: 11px;
+  color: #999999;
+  text-transform: uppercase;
+  padding-left : 5em;
+}
+
+#leftnav{
+width : 20%;
+float : left;
+padding-top : 15px;
+}
+
+#viz{
+width : 80%;
+float : right;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: inherit;
+  color: inherit;
+  text-rendering: optimizelegibility;
+  opacity : 0.55;
+  font-weight: normal; !important;
+}
+
+h1 small,
+h2 small,
+h3 small,
+h4 small,
+h5 small,
+h6 small {
+  font-weight: normal;
+  color: #999999;
+}
+
+h1 {
+  font-size: 48px;
+  line-height: 36px;
+  text-align : center;
+  padding-top : 20px;
+	font-family: prata;
+}
+
+h1 small {
+  font-size: 18px;
+}
+
+h2 {
+  font-size: 18px;
+  line-height: 27px;
+     text-align : center;
+		 font-family: prata;
+
+}
+
+h2 small {
+  font-size: 18px;
+}
+
+h3 {
+  padding-top:10px;
+  font-size: 18px;
+  line-height: 27px;
+	font-family: prata;
+}
+
+h3 small {
+  font-size: 14px;
+}
+
+h4,
+h5,
+h6 {
+  line-height: 18px;
+}
+
+h4 {
+	font-family: prata;
+	padding-top:10px;
+  font-size: 14px;
+}
+
+h4 small {
+  font-size: 12px;
+}
+
+h5 {
+  font-size: 12px;
+	font-family : lato;
+
+}
+
+h6 {
+  font-size: 11px;
+  color: #999999;
+  text-transform: uppercase;
+}
+
+.feature {
+	padding-left : 15px;
+}
+#feature a span.title {
+    float: left;
+    display: block;
+    margin-right: 10px;
+    margin-top: 5px;
+		margin-bottom:0px;
+		color: #000000;
+}
+
+#feature a span.glyphicon {
+    position: static;   
+		float : right;
+    margin-right: 0px; 
+    margin-top: 3px;
+		margin-bottom:0px;
+		color: #000000;
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: darkred;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px lato;
+}
+
+.link {
+  fill: none;
+}
+
+#topics ul
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#topics li a
+{
+	line-height: 16px;
+	display: block;
+	text-decoration: none;
+	color:#000000;
+
+}
+li.selected a
+{
+	line-height: 16px;
+	display: inline;
+	text-decoration: none;
+	background-color : whitesmoke; 
+	border-radius:2em;
+	width : 90%;
+	margin-left : -10px;
+	padding-left : 10px;
+}
+#topics li a:hover
+{
+	background-color:whitesmoke;
+	display : block;
+	border-radius:2em;
+	width : 90%;
+	margin-left : -10px;
+	padding-left : 10px;
+	
+}
+
+#button-wrapper {
+    width: 500px;
+    margin: 0 auto;
+}
+
+.d3-tip {
+  line-height: 1;
+  padding: 5px;
+  background :rgba(255,255,255,.9); /*whitesmoke with transparency*/
+	font-size: 12px;
+  border-radius: 10px;
+	font-family : lato;
+	box-shadow: 2px 2px 4px rgba(0,0,0,.3);
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: lightgrey;
+  content: "\25BC";
+  position: absolute;
+	padding-top:2px;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+.bs-sidebar .nav > .active > ul {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.ghostCircle.show{
+display:block;
+}
+
+.ghostCircle, .activeDrag .ghostCircle{
+display: none;
+}
+
+

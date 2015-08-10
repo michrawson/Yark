@@ -7,14 +7,14 @@
 
 /*Load UDFs*/
 REGISTER UNICEF/tutorial.jar;
+REGISTER UNICEF/rake_enhanced.py using jython as rake_enhanced;
 REGISTER UNICEF/rake.py using jython as rake;
-REGISTER UNICEF/datafu-1.2.0-sources.jar
 
 /*Load seperate news*/
 news_2013_2015 = LOAD 'UNICEF/OPSCEN_Brief_2013_2015.txt' USING PigStorage('\t') AS (story:chararray, title:charArray, source:charArray, country:charArray, combo102:chararray,entryDate:charArray);
 news_2005_2014 = LOAD 'UNICEF/OPSCEN_Brief_2005_2014.txt' USING PigStorage('\t') AS (story:chararray, sourceName:chararray, title:chararray, country:chararray, combo61:chararray, eventDate:charArray, dueDate:charArray, sourceLink:charArray, entryDate:charArray, combo72:charArray, thematicArea:charArray);
 
-/*Join, delete abnormal data */
+/*Join and delete abnormal data */
 clean_news_2013_2015 = FILTER news_2013_2015 BY entryDate != '';
 clean_news_2005_2014 = FILTER news_2005_2014 BY eventDate != '';
 
@@ -50,19 +50,17 @@ flatten_time = FOREACH sorted_ranked_time GENERATE group AS event_timestamp, FLA
 flatten_time_2 = FILTER flatten_time BY NOT (story matches '.*�.*');
 
 /*Extract topic and keywords using RAKE*/
-extracted_topics = FOREACH flatten_time_2 GENERATE sequence_id, event_timestamp, date, title, story, rake.extractKeyword(story) as topics, country, region; 
+extracted_topics = FOREACH flatten_time_2 GENERATE sequence_id, event_timestamp, date, title, story, rake_enhanced.extractKeyword(story) as topics, country, region; 
 counted_topics = FOREACH extracted_topics GENERATE sequence_id, event_timestamp, date, title, story, topics, COUNT(topics.keyword) as count, country, region;
-
-sample_extracted = LIMIT extracted_topics 10;
-counted_sample = FOREACH sample_extracted GENERATE sequence_id, event_timestamp, date, title, story, topics, COUNT(topics.keyword) as count, country, region;
-
+counted_topics_cleaned = FILTER counted_topics BY event_timestamp > 0 ;
 
 /*Dump all news*/
-STORE counted_topics INTO 'UNICEF/complete_news' USING PigStorage();
+STORE counted_topics_cleaned INTO 'UNICEF/extracted_topics' USING PigStorage();
 
 /*Dump news sequence for R*/
-r_input_news = FOREACH counted_topics GENERATE sequence_id, event_timestamp, count, topics.keyword as keyword_list;
-STORE r_input_news INTO 'UNICEF/r_input_news' USING PigStorage();
+r_input_news = FOREACH counted_topics_cleaned GENERATE sequence_id, event_timestamp, count, topics.keyword as keyword_list;
+sorted_r_input_news = ORDER r_input_news BY sequence_id,event_timestamp;
+STORE sorted_r_input_news INTO 'UNICEF/r_input_news' USING PigStorage();
 
 
 

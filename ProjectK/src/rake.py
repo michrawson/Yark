@@ -166,6 +166,9 @@ def extractKeyword(text):
     #if debug: print totalKeywords
     #print sortedKeywords[0:(totalKeywords / 3)]
 
+    #Each word has at least 5 characters
+    #Each phrase has at most 3 words
+    #Each keyword appears in the text at least 4 times
     rake = Rake(SmartStoplist)
     keywords = rake.run(text)
     return keywords
