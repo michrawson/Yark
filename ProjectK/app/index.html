@@ -68,6 +68,8 @@ var defGra = 2;
     var viewerWidth = 1200;
     var viewerHeight = 1000;
 
+
+
     var tree = d3.layout.tree()
         .size([viewerHeight, viewerWidth]);
 
@@ -82,6 +84,8 @@ var defGra = 2;
         });
 // ************** Generate the tree diagram	 *****************
 	treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
+
+        treeData.children.sort(function(d) { return d3.ascending(d.count); });
 	
 		function getCurrentColor(){
 			if (reverse=="true"){
@@ -156,10 +160,12 @@ var defGra = 2;
 				 .attr('class', 'd3-tip')
 				 .offset([-10, 0])
 				 .html(function(d) {
+                    //var confidence_label = d.size*100/d.count
+                    var confidence_label = d.conf
 					 if (reverse=="true"){
-						 return "<p style='text-align:center;'><b>"+d.name+"</b> leads to <b>"+d.parent.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(d.size*100/d.count)+" % </span>";
+						 return "<p style='text-align:center;'><b>"+d.name+"</b> leads to <b>"+d.parent.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(confidence_label)+" % </span>";
 					 }else {
-						 return "<p style='text-align:center;'><b>"+d.parent.name+"</b> leads to <b>"+d.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(d.size*100/d.count)+" % </span>";
+						 return "<p style='text-align:center;'><b>"+d.parent.name+"</b> leads to <b>"+d.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(confidence_label)+" % </span>";
 					 }
 				   
 		});
@@ -268,6 +274,14 @@ var defGra = 2;
         childCount(0, root);
         var newHeight = d3.max(levelWidth) * 25; // 25 pixels per line  
         tree = tree.size([newHeight, viewerWidth]);
+
+        function comparator(a, b) {
+            return b.conf - a.conf;
+        } 
+
+        tree.sort(comparator)
+
+
 
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),

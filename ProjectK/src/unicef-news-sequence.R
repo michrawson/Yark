@@ -23,7 +23,7 @@ news_file <- read_baskets("UNICEF/r_input_refined", info = c("sequenceID","event
 
 
 #generate news sequence
-news_sequence_file <- cspade(news_file, parameter = list(support = 0.01, maxgap=7), control = list(verbose = TRUE))
+news_sequence_file <- cspade(news_file, parameter = list(support = 0.01, maxgap=7, maxsize =1), control = list(verbose = TRUE))
 
 #evaluate summary
 summary(news_sequence_file)
