@@ -170,15 +170,17 @@ print(proc.time() - ptm)
 print(paste('Creating Neural Net...'))
 ptm4 <- proc.time()
 #create neural net
-#temp_net <- neuralnet(
-#             as.formula(paste('future', 
-#                          paste(colnames(trainingset_scaled_dates)[2:
-#                                (ncol(trainingset_scaled_dates)-1)], 
-#                                collapse=" + "), 
-#                          sep=" ~ ")),
-#                      trainingset_scaled_dates, 
-#                      hidden = 3, #2*ncol(trainingset_scaled_dates), 
-#                     threshold = 0.1, lifesign='full', rep=3)
+temp_net <- neuralnet(
+             as.formula(paste('future', 
+                          paste(colnames(trainingset_scaled_dates)[2:
+                                (ncol(trainingset_scaled_dates)-1)], 
+                                collapse=" + "), 
+                          sep=" ~ ")),
+                      trainingset_scaled_dates, 
+                      hidden = 3, #2*ncol(trainingset_scaled_dates), 
+                      threshold = 0.1, lifesign='full', rep=3)
+nnet_col_count <- length(colnames(trainingset_scaled_dates)[2:
+                                (ncol(trainingset_scaled_dates)-1)])
 
 print('neural network creation time:')
 print(proc.time() - ptm4)
@@ -187,45 +189,48 @@ print(temp_net)
 
 ptm5 <- proc.time()
 
+sensitivity_frame <- data.frame(V1=(1:(ncol_data-1)))
 print('Computing...')
 #foreach indicator (index, indicator, etc.)
 for( selected_feature in 1:(ncol_data-1)){ 
     print(paste('Feature: ',selected_feature))
     trainingset_mutated <- trainingset_scaled_dates
-    trainingset_mutated[, seq(selected_feature, 
+    feature_indexes <- seq(selected_feature, 
                        ncol(trainingset_mutated), 
-                       by=(ncol_data-1))] <- trainingset_mutated[, 
-                                    seq(selected_feature, 
-                                    ncol(trainingset_mutated)-1, 
-                                    by=(ncol_data-1))] - 0.10
+                       by=(ncol_data-1))
+    trainingset_mutated[,feature_indexes] <- trainingset_mutated[, 
+                                                    feature_indexes] - 0.10
     
     stopifnot(ncol(trainingset_scaled_dates)==ncol(trainingset_mutated))
     stopifnot(nrow(trainingset_scaled_dates)==nrow(trainingset_mutated))
 
-    input_result <- compute(temp_net, trainingset_mutated[,
-                            2:ncol(trainingset_mutated)-1])
-    
-    for( adder in seq(0.01,0.2,by=0.01) ){ #add .01, 20 times,see change
-        trainingset_mutated[, seq(selected_feature, 
-                       ncol(trainingset_mutated), 
-                       by=(ncol_data-1))] <- trainingset_mutated[, 
-                                seq(selected_feature, 
-                                ncol(trainingset_mutated)-1, 
-                                by=(ncol_data-1))] + adder
+    differential_frame <- data.frame(1:nrow(trainingset_mutated))
+    seq_counter <- 1
+    for( adder in seq(0,0.2,by=0.01) ){ #add .01, 20 times,see change (21)
+        trainingset_mutated[,feature_indexes] <- trainingset_mutated[, 
+                               feature_indexes] + adder
         
         stopifnot(ncol(trainingset_scaled_dates)==ncol(trainingset_mutated))
         stopifnot(nrow(trainingset_scaled_dates)==nrow(trainingset_mutated))
 
+        stopifnot(ncol(trainingset_mutated[,2:
+                       (ncol(trainingset_mutated)-1)]) == nnet_col_count)
         input_result <- compute(temp_net, trainingset_mutated[,
-                                    2:ncol(trainingset_mutated)-1])
+                                    2:(ncol(trainingset_mutated)-1)])
+        differential_frame[[seq_counter]] <- input_result$net
+        #differential_frame <- rbind(differential_frame, input_result$net )
+        seq_counter <- seq_counter + 1
+    }
+    stopifnot(nrow(differential_frame)==nrow(trainingset_mutated))
+    stopifnot(ncol(differential_frame)==seq_counter-1)
+
+    for( i in 1:ncol(differential_frame )){
+        sensitivity_frame[i,selected_feature] <- 
+            mean(differential_frame[,i])
     }
 }
-
-print(input_result)
-print('True result:')
-print(ignored_result)
-print('mean error:')
-print(mean((input_result$net.result-ignored_result)^2))
+print(sensitivity_frame)
+print(sensitivity_frame[1,] - sensitivity_frame[21,])
 print('computer validation set time:')
 print(proc.time() - ptm5)
 
