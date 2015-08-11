@@ -23,7 +23,7 @@
         { "name": "172  Impose administrative sanctions", "group": 2,"value" : 1},
         { "name": "192 Occupy territory", "group": 2,"value" : 1}, 
         { "name": "193  Fight with small arms and light weapons", "group": 2,"value" : 1}, 
-        { "name": "874 Retreat or surrender militarily", "group": 1,"value" : 1}
+        { "name": "874 Retreat or surrender militarily", "group": 2,"value" : 1}
     ],
 
     "links": [
