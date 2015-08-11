@@ -39,14 +39,3 @@ if [[ ${STATUS} -ne 0 ]]; then
         exit $STATUS
 fi
 
-Rscript analysis.R &> analysis.R.out1 &
-Rscript analysis.R &> analysis.R.out2 &
-Rscript analysis.R &> analysis.R.out3 &
-Rscript analysis.R &> analysis.R.out4 &
-Rscript analysis.R &> analysis.R.out5 &
-Rscript analysis.R &> analysis.R.out6 &
-Rscript analysis.R &> analysis.R.out7 &
-Rscript analysis.R &> analysis.R.out8 &
-Rscript analysis.R &> analysis.R.out9 &
-Rscript analysis.R &> analysis.R.out10 &
-

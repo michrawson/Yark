@@ -49,6 +49,5 @@ mt = foreach mt generate $0 as date, $1 .. $11, GDP::price;
 mt = join mt by date left, CPI by date using 'replicated';
 mt = foreach mt generate $0 as date, $1 .. $12, CPI::price;
 mt = foreach mt generate pig_udf.CustomDateConvert($0) as date, $1 .. $13;
---mt = join mt by date left, GDELT by date;
 store mt into 'master_table' using PigStorage(',');
 

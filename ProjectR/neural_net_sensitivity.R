@@ -219,7 +219,6 @@ for( selected_feature in 1:(ncol_data-1)){
         input_result <- compute(temp_net, trainingset_mutated[,
                                     2:(ncol(trainingset_mutated)-1)])
         differential_frame[[seq_counter]] <- input_result$net
-        #differential_frame <- rbind(differential_frame, input_result$net )
         seq_counter <- seq_counter + 1
     }
     stopifnot(nrow(differential_frame)==nrow(trainingset_mutated))
