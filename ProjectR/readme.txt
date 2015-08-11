@@ -18,3 +18,11 @@ Description :
 Normalize data with R
 Filenames : 
 analysis.R
+
+/****** Code Drop 3/4 *******/
+Description :
+Create Neural Network. Measure overfit/underfit. Measure sensitivity to indicators.
+Filenames : 
+neural_net_errors.R
+neural_net_sensitivity.R
+sensitivities.csv
