@@ -33,5 +33,7 @@ Code : /src/frequentpatternmining.ipynb
 Description:
 
 Using d3.js to visualize the most frequent pattern based on everyday’s news event code.
+Also create a decision tree model for Ariel’s data
 
 Code: /vis
+/src/decisionTree.py
