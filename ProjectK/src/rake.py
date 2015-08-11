@@ -27,10 +27,6 @@ def load_stop_words(stop_word_file):
     @param stop_word_file Path and file name of a file containing stop words.
     @return list A list of stop words.
     """
-    #for line in open(stop_word_file):
-    #    if line.strip()[0:1] != "#":
-    #        for word in line.split():  # in case more than one per line
-    #            stop_words.append(word)
     return stop_word_file
 
 
@@ -89,13 +85,11 @@ def calculate_word_scores(phraseList):
         word_list = separate_words(phrase, 0)
         word_list_length = len(word_list)
         word_list_degree = word_list_length - 1
-        #if word_list_degree > 3: word_list_degree = 3 #exp.
         for word in word_list:
             word_frequency.setdefault(word, 0)
             word_frequency[word] += 1
             word_degree.setdefault(word, 0)
             word_degree[word] += word_list_degree  #orig.
-            #word_degree[word] += 1/(word_list_length*1.0) #exp.
     for item in word_frequency:
         word_degree[item] = word_degree[item] + word_frequency[item]
 
@@ -104,7 +98,6 @@ def calculate_word_scores(phraseList):
     for item in word_frequency:
         word_score.setdefault(item, 0)
         word_score[item] = word_degree[item] / (word_frequency[item] * 1.0)  #orig.
-    #word_score[item] = word_frequency[item]/(word_degree[item] * 1.0) #exp.
     return word_score
 
 
@@ -137,38 +130,8 @@ class Rake(object):
         return sorted_keywords
 
 
-#if test:
-#text = "Algerian Islamic militants killed four civilians in the latest attack since voters overwhelmingly backed a partial amnesty for rebels three months ago, authorities said on 8 January. The victims, who worked for a state water company, were killed on 7 January in the southwestern province of Tissemsilt, some 340 km (211 miles) from the capital Algiers, their company Algerienne des eaux said in a statement."
-
 @outputSchema("items:bag{item:tuple(keyword:chararray,score:int)}")
 def extractKeyword(text):
-    # Split text into sentences
-    #sentenceList = split_sentences(text)
-    
-    #stoppath = "FoxStoplist.txt" #Fox stoplist contains "numbers", so it will not find "natural numbers" like in Table 1.1
-    #stoppath = "SmartStoplist.txt"  #SMART stoplist misses some of the lower-scoring keywords in Figure 1.5, which means that the top 1/3 cuts off one of the 4.0 score words in Table 1.1
-    #stopwordpattern = build_stop_word_regex(stoppath)
-
-    # generate candidate keywords
-    #phraseList = generate_candidate_keywords(sentenceList, stopwordpattern)
-
-    # calculate individual word scores
-    #wordscores = calculate_word_scores(phraseList)
-
-    # generate candidate keyword scores
-    #keywordcandidates = generate_candidate_keyword_scores(phraseList, wordscores)
-    #if debug: print keywordcandidates
-
-    #sortedKeywords = sorted(keywordcandidates.iteritems(), key=operator.itemgetter(1), reverse=True)
-    #if debug: print sortedKeywords
-
-    #totalKeywords = len(sortedKeywords)
-    #if debug: print totalKeywords
-    #print sortedKeywords[0:(totalKeywords / 3)]
-
-    #Each word has at least 5 characters
-    #Each phrase has at most 3 words
-    #Each keyword appears in the text at least 4 times
     rake = Rake(SmartStoplist)
     keywords = rake.run(text)
     return keywords
