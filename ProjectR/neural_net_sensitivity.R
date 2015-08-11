@@ -234,6 +234,8 @@ print(sensitivity_frame[1,] - sensitivity_frame[21,])
 print('computer validation set time:')
 print(proc.time() - ptm5)
 
+write.csv(sensitivity_frame, file=paste('sensitivity.csv',random_start,sep='.'))
+
 print('Total time')
 print(proc.time() - ptm)
 
