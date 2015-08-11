@@ -8,8 +8,8 @@ import org.apache.hadoop.conf.Configuration;
 public class crisis {
 public static void main(String[] args) throws Exception {
 if (args.length != 2) {
-System.err.println("Usage: crisis <input path> <output path>");
-System.exit(-1);
+      System.err.println("Usage: crisis <input path> <output path>");
+      System.exit(-1);
 }
 Job job = new Job();
 job.setJarByClass(crisis.class);
