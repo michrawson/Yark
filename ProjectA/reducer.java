@@ -11,9 +11,8 @@ extends Reducer<Text,Text, Text, Text> {
 public void reduce(Text key, Iterable<Text> values,
 Context context)
 throws IOException, InterruptedException {
-Iterator<Text> iter = values.iterator();
-			
-context.write(key,iter.next());
-                                           }
 
-                                            }
+Iterator<Text> iter = values.iterator();
+context.write(key,iter.next());
+  }
+  }
