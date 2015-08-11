@@ -1,5 +1,5 @@
-create database ariel2;
-use ariel2;
+create database crisis;
+use crisis;
 
 Create external table myvars  (ID string, vals string) row format delimited fields terminated by '\t'  location 'hdfs://babar.es.its.nyu.edu:8020/user/bad225/proc/';
 
