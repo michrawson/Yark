@@ -47,47 +47,40 @@ var boolLineSat = 1;
 var defConf = 0;
 var levelConf;
 var defGra = 2;
-	var maxGra = 4;
-	var levelGra = defGra;
-		var totalNodes = 0;
-    var maxLabelLength = 0;
-    // variables for drag/drop
-    var selectedNode = null;
-    var draggingNode = null;
-    // panning variables
-    var panSpeed = 200;
-    var panBoundary = 20; // Within 20px from edges will pan when dragging.
-    // Misc. variables
-    var i = 0;
-    var duration = 750;
-    var root;
-		var reverse = false;
+var maxGra = 4;
+var levelGra = defGra;
+var totalNodes = 0;
+var maxLabelLength = 0;
+var selectedNode = null;
+var draggingNode = null;
+var panSpeed = 200;
+var panBoundary = 20; // Within 20px from edges will pan when dragging.
+var i = 0;
+var duration = 750;
+var root;
+var reverse = false;
+var viewerWidth = 1200;
+var viewerHeight = 1000;
 
+var tree = d3.layout.tree()
+.size([viewerHeight, viewerWidth]);
 
-		// size of the diagram
-    var viewerWidth = 1200;
-    var viewerHeight = 1000;
+// define a d3 diagonal projection for use by the node paths later on.
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) {
+        if (reverse == "true"){
+            return [-d.y, d.x];
+        } else {
+            return [d.y, d.x];
+        }
+    });
 
-
-
-    var tree = d3.layout.tree()
-        .size([viewerHeight, viewerWidth]);
-
-    // define a d3 diagonal projection for use by the node paths later on.
-    var diagonal = d3.svg.diagonal()
-        .projection(function(d) {
-					if (reverse == "true"){
-						return [-d.y, d.x];
-					} else {
-						return [d.y, d.x];
-					}
-        });
 // ************** Generate the tree diagram	 *****************
-	treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
+treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
 
-        treeData.children.sort(function(d) { return d3.ascending(d.count); });
+    treeData.children.sort(function(d) { return d3.ascending(d.count); });
 	
-		function getCurrentColor(){
+    function getCurrentColor(){
 			if (reverse=="true"){
 				return revColor;
 			} else{
@@ -95,6 +88,7 @@ var defGra = 2;
 			}
 		
 		}
+
     // A recursive helper function for performing some setup by walking through all node
     function visit(parent, visitFn, childrenFn) {
         if (!parent) return;
@@ -118,8 +112,6 @@ var defGra = 2;
     }, function(d) { //children 
         return d.children && d.children.length > 0 ? d.children : null;
     });
-
-    // TODO: Pan function, can be better implemented.
 
     function pan(domNode, direction) {
         var speed = panSpeed;
@@ -181,10 +173,7 @@ var defGra = 2;
 
 		baseSvg.call(tip);	
 		
-    // Define the drag listeners for drag/drop behaviour of nodes.
-
     // Helper functions for collapsing and expanding nodes.
-
     function collapse(d) {
         if (d.children) {
             d._children = d.children;
@@ -226,7 +215,6 @@ var defGra = 2;
     }
 		
     // Toggle children function
-
     function toggleChildren(d) {
         if (d.children) {
             d._children = d.children;
@@ -239,7 +227,6 @@ var defGra = 2;
     }
 
     // Toggle children on click.
-
     function click(d) {
       if (d3.event.defaultPrevented) return; // click suppressed
 			var e = d3.event;
@@ -249,10 +236,7 @@ var defGra = 2;
         d = toggleChildren(d);
         update(d);
         centerNode(d);
-      }
-        
-        
-				
+      }  		
     }
 
     function update(source) {
@@ -322,27 +306,27 @@ var defGra = 2;
         nodeEnter.append("text")
             .attr("x", function(d) {
                 //return d.children || d._children ? -10 : 10;
-								if (reverse=="true"){
-									if (d==root){
-										return 10;
-									} else if (d.children){
-										return -10;
-									} else if (d._children){
-										return -10;
-									} else {
-										return -10;
-									}
-								} else {
-									if (d==root){
-										return -10;
-									} else if (d.children){
-										return 10;
-									} else if (d._children){
-										return 10;
-									} else {
-										return 10;
-									}
-								}
+                if (reverse=="true"){
+					if (d==root){
+						return 10;
+					} else if (d.children){
+						return -10;
+					} else if (d._children){
+						return -10;
+					} else {
+						return -10;
+					}
+				} else {
+					if (d==root){
+						return -10;
+					} else if (d.children){
+						return 10;
+					} else if (d._children){
+						return 10;
+					} else {
+						return 10;
+					}
+				}
 								
             })
             .attr("dy", ".35em")
@@ -371,23 +355,23 @@ var defGra = 2;
 									return "start";
 								}
 							}	
-            })
+                        })
 						.on('mouseover', tip.show)
 						.on('mouseout', tip.hide)
-            .text(function(d) {
-                return d.name;
-            })
+                        .text(function(d) {
+                            return d.name;
+                        })
 						.style("visibility", function(d) {
-						                return ((d.size*100/d.siblingCount) < levelConf) ? "hidden" : "visible";
+                            return ((d.size*100/d.siblingCount) < levelConf) ? "hidden" : "visible";
 						              })
-            .style("fill-opacity", 0);
+                        .style("fill-opacity", 0);
 
         // phantom node to give us mouseover in a radius around it
         nodeEnter.append("circle")
             .attr('class', 'ghostCircle')
             .attr("r", 30)
             .attr("opacity", 0.2) // change this to zero to hide the target area
-        .style("fill", "red")
+            .style("fill", "red")
             .attr('pointer-events', 'mouseover')
             .on("mouseover", function(node) {
                 overCircle(node);
@@ -398,99 +382,88 @@ var defGra = 2;
 
         // Update the text to reflect whether node has children or not.
         node.select('text')
-        .attr("x", function(d) {
-            //return d.children || d._children ? -10 : 10;
-						if (reverse=="true"){
-							if (d==root){
-								return 10;
-							} else if (d.children){
-								return -10;
-							} else if (d._children){
-								return -10;
-							} else {
-								return -10;
-							}
-						} else {
-							if (d==root){
-								return -10;
-							} else if (d.children){
-								return 10;
-							} else if (d._children){
-								return 10;
-							} else {
-								return 10;
-							}
-						}
+            .attr("x", function(d) {
+				if (reverse=="true"){
+					if (d==root){
+						return 10;
+					} else if (d.children){
+						return -10;
+					} else if (d._children){
+						return -10;
+					} else {
+						return -10;
+					}
+				} else {
+					if (d==root){
+						return -10;
+					} else if (d.children){
+						return 10;
+					} else if (d._children){
+						return 10;
+					} else {
+						return 10;
+					}
+				}
         })
-        .attr("text-anchor", function(d) {
-            //return d.children || d._children ? "end" : "start";
-						
-						if (reverse=="true"){
-							if (d==root){
-								return "start";
-							} else if (d.children){
-								return "start";
-							} else if (d._children){
-								return "end";
-							} else {
-								return "end";
-							}
-						} else {
-							if (d==root){
-								return "end";
-							} else if (d.children){
-								return "end";
-							} else if (d._children){
-								return "start";
-							} else {
-								return "start";
-							}
-						}
+        .attr("text-anchor", function(d) {	
+			if (reverse=="true"){
+				if (d==root){
+					return "start";
+				} else if (d.children){
+					return "start";
+				} else if (d._children){
+					return "end";
+				} else {
+					return "end";
+				}
+			} else {
+				if (d==root){
+					return "end";
+				} else if (d.children){
+					return "end";
+				} else if (d._children){
+					return "start";
+				} else {
+					return "start";
+				}
+			}
         })
             .text(function(d) {
                 return d.name;
             });
 
-        // Change the circle fill depending on whether it has children and is collapsed
-        /*
-				node.select("circle.nodeCircle")
-            .attr("r", 4.5)
-            .style("fill", function(d) {
-                return d._children ? "indianred" : "#fff";
-            });
-				*/
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
             .duration(duration)
             .attr("transform", function(d) {
-							if (reverse == "true"){
-								return "translate(-" + d.y + "," + d.x + ")";
-							} else{
-								return "translate(" + d.y + "," + d.x + ")";
-							} 
+				if (reverse == "true"){
+					return "translate(-" + d.y + "," + d.x + ")";
+				} else{
+					return "translate(" + d.y + "," + d.x + ")";
+				} 
             });
 
         // Fade the text in
         nodeUpdate.select("text")
             .style("fill-opacity", 0.8)
-						.style("font", function(d){
-							if (boolFontSize=='false'){
-								return 12+"px lato";
-							} else{
-								return (12+(d.size*20/d.siblingCount))+"px lato";
-							}
-							})
-						.style("font-weight","normal");
+			.style("font", function(d){
+				if (boolFontSize=='false'){
+					return 12+"px lato";
+				} else{
+					return (12+(d.size*20/d.siblingCount))+"px lato";
+				}
+				})
+			.style("font-weight","normal");
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
             .duration(duration)
             .attr("transform", function(d) {
-							if (reverse=="true"){
-								return "translate(-" + source.y + "," + source.x + ")";
-							}else {
-								return "translate(" + source.y + "," + source.x + ")";
-							}
+    			if (reverse=="true"){
+    				return "translate(-" + source.y + "," + source.x + ")";
+    			}else {
+    				return "translate(" + source.y + "," + source.x + ")";
+    			}
                 
             })
             .remove();
@@ -507,7 +480,6 @@ var defGra = 2;
                 return d.target.id;
             });
 							
-
         // Enter any new links at the parent's previous position.
         link.enter().insert("path", "g")
             .attr("class", "link")
@@ -521,22 +493,22 @@ var defGra = 2;
                     target: o
                 });
             })
-						.style("stroke-width", function(d){
-							if (boolLineSat = 'true'){
-								var ret = ((1/d.source.depth+1)/4.5); //depends on the depth
-							} else{
-								var ret = (0.1); //constant
-							}
-							return ret;
-															})
-						.style("fill", "none")
-						.style("stroke",function(d) {
-							if (reverse == "true"){
-								return revColor;
-							}else {
-								return normalColor;
-						}
-															});
+			.style("stroke-width", function(d){
+				if (boolLineSat = 'true'){
+					var ret = ((1/d.source.depth+1)/4.5); //depends on the depth
+				} else{
+					var ret = (0.1); //constant
+				}
+				return ret;
+												})
+			.style("fill", "none")
+			.style("stroke",function(d) {
+				if (reverse == "true"){
+					return revColor;
+				}else {
+					return normalColor;
+			}
+												});
 															
 						
 
@@ -578,66 +550,62 @@ var defGra = 2;
 		
 		//root.children.forEach(collapse);
 		function setDepth(levelGra){
-    visit(treeData, function(d) { //visit function
-			if (d.position == levelGra){
-				collapse(d);
-			}
-    }, function(d) { //children 
-        return d.children && d.children.length > 0 ? d.children : null;
-    });
-		update(root);
-	}
+            visit(treeData, function(d) { //visit function
+    			if (d.position == levelGra){
+    				collapse(d);
+    			}
+            }, function(d) { //children 
+                return d.children && d.children.length > 0 ? d.children : null;
+            });
+        	update(root);
+        }
 	
 	function setConf(levelConf){
-  visit(treeData, function(d) { //visit function
-		if ((d.size*100/d.siblingCount) < levelConf){
-			collapse(d);
-		}
-  }, function(d) { //children 
-      return d.children && d.children.length > 0 ? d.children : null;
-  });
-	update(root);
-}
+      visit(treeData, function(d) { //visit function
+    		if ((d.size*100/d.siblingCount) < levelConf){
+    			collapse(d);
+    		}
+        }, function(d) { //children 
+            return d.children && d.children.length > 0 ? d.children : null;
+        });
+        update(root);
+    }
 	
-
-		
-	
-		d3.select("#slider-gra").on("change",function(){
-			setDepth(levelGra);
-		});
+	d3.select("#slider-gra").on("change",function(){
+        setDepth(levelGra);
+    });
 		
 	d3.select("#colorpicker-normal").on("click",function(){
 		update(root);
 	});
 		
-		d3.select("#colorpicker-reverse").on("click",function(d){
-			update(root);
-		});
+	d3.select("#colorpicker-reverse").on("click",function(d){
+		update(root);
+	});
 		
-		d3.selectAll("#radioSat input[name=radioSatOption]").on("change", function() {
-			if (this.value = "0"){
-				link.style("stroke-width", function(d){
-							var ret = (0.1); //constant
-							return ret;})
-							update(root);
-			}
-			else {
-				link.style("stroke-width", function(d){
-							var ret = ((1/d.source.depth+1)/4.5); //depends on the depth
-							return ret;})
-							update(root);
-			}
-		  });
+	d3.selectAll("#radioSat input[name=radioSatOption]").on("change", function() {
+		if (this.value = "0"){
+			link.style("stroke-width", function(d){
+						var ret = (0.1); //constant
+						return ret;})
+						update(root);
+		}
+		else {
+			link.style("stroke-width", function(d){
+						var ret = ((1/d.source.depth+1)/4.5); //depends on the depth
+						return ret;})
+						update(root);
+		}
+	  });
 
-
-		setDepth(levelGra);
-		setConf(levelConf);
-		//Layout the tree initially and center on the root node.
+	setDepth(levelGra);
+	setConf(levelConf);
+	//Layout the tree initially and center on the root node.
     update(root);
     centerNode(root);
 });
 
 </script>
 	
-  </body>
+</body>
 </html>
