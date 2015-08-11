@@ -174,7 +174,6 @@ reserved_sample_counter <- 1
 print('Total time so far...')
 print(proc.time() - ptm)
 
-#stocknet <- c(1:10)
 # cross validation/10-fold
 for ( fold in 0:10 ) { #for each fold
     #create subset of training data
@@ -210,7 +209,6 @@ for ( fold in 0:10 ) { #for each fold
     print(proc.time() - ptm4)
 
     print(temp_net)
-    #stocknet[ignore_fold+1] <- temp_net
 
     ignored_sample <- trainingset_scaled_dates[
                     (reserved_samples[reserved_sample_counter:
