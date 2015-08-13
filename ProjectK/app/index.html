@@ -45,7 +45,7 @@ var revColor = '#00000';
 var boolFontSize = 12;
 var boolLineSat = 1;
 var defConf = 0;
-var levelConf;
+var levelConf = 0; //can be used as a dynamic variable
 var defGra = 2;
 var maxGra = 4;
 var levelGra = defGra;
@@ -77,8 +77,6 @@ var diagonal = d3.svg.diagonal()
 
 // ************** Generate the tree diagram	 *****************
 treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
-
-    treeData.children.sort(function(d) { return d3.ascending(d.count); });
 	
     function getCurrentColor(){
 			if (reverse=="true"){
@@ -148,19 +146,19 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
     var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
 
 
-		var tip = d3.tip()
-				 .attr('class', 'd3-tip')
-				 .offset([-10, 0])
-				 .html(function(d) {
-                    //var confidence_label = d.size*100/d.count
-                    var confidence_label = d.conf
-					 if (reverse=="true"){
-						 return "<p style='text-align:center;'><b>"+d.name+"</b> leads to <b>"+d.parent.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(confidence_label)+" % </span>";
-					 }else {
-						 return "<p style='text-align:center;'><b>"+d.parent.name+"</b> leads to <b>"+d.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(confidence_label)+" % </span>";
-					 }
-				   
-		});
+	var tip = d3.tip()
+			 .attr('class', 'd3-tip')
+			 .offset([-10, 0])
+			 .html(function(d) {
+                //var confidence_label = d.size*100/d.count
+                var confidence_label = (d.conf*100).toFixed(2)
+				 if (reverse=="true"){
+					 return "<p style='text-align:center;'><b>"+d.name+"</b> leads to <b>"+d.parent.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(confidence_label)+" % </span>";
+				 }else {
+					 return "<p style='text-align:center;'><b>"+d.parent.name+"</b> leads to <b>"+d.name+"</b> up to 7 days later<br><span style='color:"+getCurrentColor()+"';>confidence : "+(confidence_label)+" % </span>";
+				 }
+			   
+	});
 		
 		 
 		
@@ -265,8 +263,6 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
 
         tree.sort(comparator)
 
-
-
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
             links = tree.links(nodes);
@@ -359,11 +355,16 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
 						.on('mouseover', tip.show)
 						.on('mouseout', tip.hide)
                         .text(function(d) {
-                            return d.name;
+                            if (d==root){
+                                return d.name;
+                            } else {
+                                return d.name+" ("+(d.conf*100).toFixed(2)+"%)";
+                            }
+                            
                         })
 						.style("visibility", function(d) {
-                            return ((d.size*100/d.siblingCount) < levelConf) ? "hidden" : "visible";
-						              })
+                            return ((d.conf*100) < levelConf) ? "hidden" : "visible";
+						})
                         .style("fill-opacity", 0);
 
         // phantom node to give us mouseover in a radius around it
@@ -429,7 +430,12 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
 			}
         })
             .text(function(d) {
-                return d.name;
+                if (d==root){
+                    return d.name;
+                } else {
+                    return d.name+" ("+(d.conf*100).toFixed(2)+"%)";
+                }
+                
             });
 
         // Transition nodes to their new position.
@@ -495,12 +501,16 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
             })
 			.style("stroke-width", function(d){
 				if (boolLineSat = 'true'){
-					var ret = ((1/d.source.depth+1)/4.5); //depends on the depth
+					var ret = d.target.conf*100; //depends on the depth
 				} else{
+
 					var ret = (0.1); //constant
 				}
 				return ret;
 												})
+            .style("visibility", function(d) {
+                            return ((d.target.conf*100) < levelConf) ? "hidden" : "visible";
+                        })
 			.style("fill", "none")
 			.style("stroke",function(d) {
 				if (reverse == "true"){
@@ -508,9 +518,7 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
 				}else {
 					return normalColor;
 			}
-												});
-															
-						
+												});					
 
         // Transition links to their new position.
         link.transition()
@@ -562,7 +570,8 @@ treeJSON = d3.json("keyword_tree.json", function(error, treeData) {
 	
 	function setConf(levelConf){
       visit(treeData, function(d) { //visit function
-    		if ((d.size*100/d.siblingCount) < levelConf){
+    		if ((d.conf*100) < levelConf){
+                console.log("Collapse")
     			collapse(d);
     		}
         }, function(d) { //children 
